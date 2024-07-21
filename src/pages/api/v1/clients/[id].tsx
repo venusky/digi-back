@@ -67,7 +67,7 @@ export default async function handler (req:NextApiRequest, res:NextApiResponse){
             const {id} = req.query
             const customer = await prisma.client.findFirst({
                 where: {
-                    matricule: id
+                    matricule: String(id)
                 }
             });
             if (customer){
