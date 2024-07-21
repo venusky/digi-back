@@ -18,7 +18,7 @@ export default async function handler (req:NextApiRequest, res:NextApiResponse){
             const {id} = req.query
             const data = await prisma.societe.findFirst({
                 where: {
-                    id: id
+                    id: Number(id)
                 }
             });
             if (data){
