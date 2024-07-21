@@ -68,7 +68,7 @@ export default async function handler (req:NextApiRequest, res:NextApiResponse){
                 })
                 if (addCommande){
                     const data = req.body.products;
-                    const productMap = data.map(product => ({
+                    const productMap = data.map((product: any) => ({
                         libelle: product.name,
                         details: product.details,
                         unitPrice: parseFloat(product.price),
