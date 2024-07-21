@@ -1,0 +1,129 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Societe {
+  id            Int        @id @default(autoincrement())
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  name          String     @db.VarChar(255)
+  typeJuridique String?
+  adress        String?
+  email         String?
+  website       String?
+  phone         String?
+  NAF           String?
+  capital       Float      @default(0.0)
+  country       String?
+  city          String?
+  taxeImma      String?
+  manager       String?
+  managerPhone  String?
+  user          User[]
+  commande      Commande[]
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  email     String
+  name      String
+  firstname String
+  password  String
+  token     String
+  company   Societe  @relation(fields: [companyId], references: [id])
+  companyId Int
+}
+
+model Cgu {
+  id        Int        @id @default(autoincrement())
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  titre     String
+  libelle   String
+  status    Boolean    @default(true)
+  commande  Commande[]
+}
+
+model Client {
+  id           Int        @id @default(autoincrement())
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  matricule    String     @unique
+  fullname     String
+  companyName  String?
+  adressPostal String?
+  phone        String?
+  email        String?
+  iban         String?
+  tva          Boolean    @default(false)
+  commande     Commande[]
+}
+
+model Commande {
+  id             Int                      @id @default(autoincrement())
+  createdAt      DateTime                 @default(now())
+  updatedAt      DateTime                 @updatedAt
+  code           String
+  taxe           Float                    @default(0.0)
+  servicePrice   Float                    @default(0.0)
+  payementMethod String?
+  cardNumber     String
+  ownerName      String
+  beginDate      DateTime?
+  endDate        DateTime?
+  horsTaxe       Float                    @default(0.0)
+  time           Float?
+  TTC            Float?                   @default(0.0)
+  condition      Cgu                      @relation(fields: [conditionId], references: [id])
+  conditionId    Int
+  client         Client                   @relation(fields: [clientId], references: [id])
+  clientId       Int
+  societe        Societe                  @relation(fields: [societeId], references: [id])
+  societeId      Int
+  prelevements   PrelevementOnCommandes[]
+  Articles       Articles[]
+}
+
+model Articles {
+  id         Int      @id @default(autoincrement())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  libelle    String
+  details    String?
+  unitPrice  Float    @default(0.0)
+  quantity   Float    @default(0.0)
+  commande   Commande @relation(fields: [commandeId], references: [id])
+  commandeId Int
+}
+
+model Prelevement {
+  id           Int                      @id @default(autoincrement())
+  createdAt    DateTime                 @default(now())
+  updatedAt    DateTime                 @updatedAt
+  amount       Float                    @default(0.0)
+  method       String?
+  prelevements PrelevementOnCommandes[]
+}
+
+model PrelevementOnCommandes {
+  commande      Commande    @relation(fields: [commandeId], references: [id])
+  commandeId    Int
+  prelevement   Prelevement @relation(fields: [prelevementId], references: [id])
+  prelevementId Int
+  assignedAt    DateTime    @default(now())
+
+  @@id([commandeId, prelevementId])
+}
