@@ -53,12 +53,16 @@ export default async function handler (req:NextApiRequest, res:NextApiResponse){
                     id: true
                 }
             });
-            const deleteCustomer = await prisma.client.delete({
-                where: {
-                    id: verifyCustomer.id
-                }
-            });
-            return res.status(200).json({message: 'Clients supprimé avec succès'})
+            if(!verifyCustomer){
+                return res.status(404).json({ message: 'Client non trouvé' });
+            } else {
+                const deleteCustomer = await prisma.client.delete({
+                    where: {
+                        id: verifyCustomer.id
+                    }
+                });
+                return res.status(200).json({message: 'Clients supprimé avec succès'})
+            }
         } else if (req.method === 'GET'){
             const {id} = req.query
             const customer = await prisma.client.findFirst({
