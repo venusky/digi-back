@@ -1,0 +1,8 @@
+{
+  "build": {
+    "env": {
+      "DATABASE_URL":"postgres://default:nFuUzmd06MjI@ep-old-scene-a4l5fujb.us-east-1.aws.neon.tech:5432/verceldb?sslmode=require"
+    },
+    "postbuild": "prisma generate"
+  }
+}
