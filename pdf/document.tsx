@@ -4,8 +4,17 @@ import React from 'react';
 import { Page, Text, View, Image, Document, StyleSheet } from '@react-pdf/renderer';
 // import {logo} from '../public/Digiarti.jpg'
 
-// Create Document Component
-const MyDocument = ({data}) => (
+interface DocumentData {
+    societe: any,
+    condition: any,
+    beginDate: any,
+    endDate: any,
+    horsTaxe: any,
+    servicePrice: any,
+    taxe:any,
+    taxeService:any
+}
+const MyDocument : React.FC<{ data: DocumentData }> = ({data}) => (
     <Document>
         <Page size="A4" style={styles.page}>
             <View style={styles.section}>
@@ -222,7 +231,7 @@ const MyDocument = ({data}) => (
                         transformOrigin: 'left top',
                         flexWrap: 'nowrap',
                         fontSize:10
-                    }}>{data.societe.typeJuridique} Au capital de {data.societe.capital} Euros - {data.societe.adress} - TVA Immatriculation: {data.societe.taxeImma} - NAF: {data.societe.NAF}</Text>
+                    }}>{data.societe.typeJuridique} Au capital de {(data.societe.capital).toFixed(2)} Euros - {data.societe.adress} - TVA Immatriculation: {data.societe.taxeImma} - NAF: {data.societe.NAF}</Text>
                 </View>
             </View>
             <View style={styles.fixed} fixed={true}>
