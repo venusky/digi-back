@@ -12,7 +12,7 @@ const PDFViewer = dynamic(
     },
 );
 
-const Invoice = ({data}) =>{
+const Invoice = ({data:any}) =>{
 
 
     return(

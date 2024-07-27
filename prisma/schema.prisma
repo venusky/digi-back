@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -18,7 +12,6 @@ model Societe {
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
   name          String     @db.VarChar(255)
-  typeJuridique String?
   adress        String?
   email         String?
   website       String?
@@ -30,8 +23,9 @@ model Societe {
   taxeImma      String?
   manager       String?
   managerPhone  String?
-  user          User[]
+  typeJuridique String?
   commande      Commande[]
+  user          User[]
 }
 
 model User {
@@ -42,17 +36,17 @@ model User {
   name      String
   firstname String
   password  String
+  companyId Int
   token     String
   company   Societe  @relation(fields: [companyId], references: [id])
-  companyId Int
 }
 
 model Cgu {
   id        Int        @id @default(autoincrement())
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
-  titre     String
   libelle   String
+  titre     String
   status    Boolean    @default(true)
   commande  Commande[]
 }
@@ -80,22 +74,22 @@ model Commande {
   taxe           Float                    @default(0.0)
   servicePrice   Float                    @default(0.0)
   payementMethod String?
-  cardNumber     String
   ownerName      String
   beginDate      DateTime?
   endDate        DateTime?
   horsTaxe       Float                    @default(0.0)
   time           Float?
-  taxeService    Float                    @default(0.0)
   TTC            Float?                   @default(0.0)
-  condition      Cgu                      @relation(fields: [conditionId], references: [id])
   conditionId    Int
-  client         Client                   @relation(fields: [clientId], references: [id])
   clientId       Int
-  societe        Societe                  @relation(fields: [societeId], references: [id])
   societeId      Int
-  prelevements   PrelevementOnCommandes[]
+  cardNumber     String
+  taxeService    Float                    @default(0.0)
   Articles       Articles[]
+  client         Client                   @relation(fields: [clientId], references: [id])
+  condition      Cgu                      @relation(fields: [conditionId], references: [id])
+  societe        Societe                  @relation(fields: [societeId], references: [id])
+  prelevements   PrelevementOnCommandes[]
 }
 
 model Articles {
@@ -106,8 +100,8 @@ model Articles {
   details    String?
   unitPrice  Float    @default(0.0)
   quantity   Float    @default(0.0)
-  commande   Commande @relation(fields: [commandeId], references: [id])
   commandeId Int
+  commande   Commande @relation(fields: [commandeId], references: [id])
 }
 
 model Prelevement {
@@ -120,11 +114,11 @@ model Prelevement {
 }
 
 model PrelevementOnCommandes {
-  commande      Commande    @relation(fields: [commandeId], references: [id])
   commandeId    Int
-  prelevement   Prelevement @relation(fields: [prelevementId], references: [id])
   prelevementId Int
   assignedAt    DateTime    @default(now())
+  commande      Commande    @relation(fields: [commandeId], references: [id])
+  prelevement   Prelevement @relation(fields: [prelevementId], references: [id])
 
   @@id([commandeId, prelevementId])
 }
