@@ -80,11 +80,11 @@ model Commande {
   horsTaxe       Float                    @default(0.0)
   time           Float?
   TTC            Float?                   @default(0.0)
+  taxeService    Float                    @default(0.0)
   conditionId    Int
   clientId       Int
   societeId      Int
   cardNumber     String
-  taxeService    Float                    @default(0.0)
   Articles       Articles[]
   client         Client                   @relation(fields: [clientId], references: [id])
   condition      Cgu                      @relation(fields: [conditionId], references: [id])
