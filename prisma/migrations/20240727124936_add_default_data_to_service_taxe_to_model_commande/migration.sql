@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE "Commande" ADD COLUMN     "taxeService" DOUBLE PRECISION NOT NULL DEFAULT 0.0;
