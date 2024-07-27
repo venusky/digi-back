@@ -19,11 +19,15 @@ export default async function handler (req:NextApiRequest, res:NextApiResponse){
     try {
         if (req.method === 'GET'){
             const customers = await prisma.client.findMany({
+
                 include: { commande: true },
                 orderBy: { fullname: "asc" },
+
             })
             if (customers){
+
                 return res.status(200).json({
+
                     success: 'ok',
                     data: customers
                 })
