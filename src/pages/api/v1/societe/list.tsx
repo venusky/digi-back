@@ -14,6 +14,7 @@ export default async function handler(req:NextApiRequest, res:NextApiResponse){
     try {
         if (req.method === 'GET'){
             const company = await prisma.societe.findMany();
+            console.log(company)
             if (company){
                 res.status(200).json({
                     success: true,

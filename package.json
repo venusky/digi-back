@@ -11,6 +11,7 @@
   "dependencies": {
     "@prisma/client": "^5.16.1",
     "@react-email/components": "0.0.21",
+    "@react-pdf/renderer": "^3.4.4",
     "@sendgrid/mail": "^8.1.3",
     "@vercel/postgres": "^0.9.0",
     "bcrypt": "^5.1.1",
@@ -27,7 +28,10 @@
     "@types/node": "^20.14.9",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "autoprefixer": "^10.4.19",
+    "postcss": "^8.4.40",
     "prisma": "^5.16.1",
+    "tailwindcss": "^3.4.7",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.2"
   },

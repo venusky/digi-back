@@ -3,6 +3,14 @@ import Cors from "nextjs-cors";
 import {PrismaClient} from "@prisma/client";
 import cryptoRandomString from "crypto-random-string";
 import path from "node:path";
+import {hooks} from "prismjs";
+import add = hooks.add;
+import {render} from "@react-email/components";
+import {renderToStream} from "@react-pdf/renderer";
+import Invoice from "@/pages/invoice";
+import MyDocument from "../../../../../pdf/document";
+import {number} from "prop-types";
+import {start} from "node:repl";
 const URL = process.env.URL_FRONT
 
 const prisma = new PrismaClient()
@@ -45,6 +53,9 @@ export default async function handler (req:NextApiRequest, res:NextApiResponse){
                 }
             })
             if (customer){
+                const today = new Date();
+                const last = new Date(today);
+                last.setDate(today.getDate() + 15);
 
                 const IDCustomer = customer.id
                 const TTC = parseFloat(req.body.subsolde) + parseFloat(req.body.serviceprice) + parseFloat(req.body.taxeprice);
@@ -54,8 +65,11 @@ export default async function handler (req:NextApiRequest, res:NextApiResponse){
                         code: code,
                         taxe: parseFloat(req.body.taxeprice),
                         servicePrice: parseFloat(req.body.serviceprice),
+                        taxeService: parseFloat(req.body.taxeService),
                         payementMethod: req.body.paidMethod.paidname,
                         ownerName: req.body.paidMethod.ownername,
+                        beginDate: today,
+                        endDate: last,
                         cardNumber: req.body.paidMethod.cardnumber,
                         horsTaxe: parseFloat(req.body.subsolde),
                         TTC : TTC,
@@ -63,7 +77,6 @@ export default async function handler (req:NextApiRequest, res:NextApiResponse){
                         clientId: IDCustomer,
                         societeId: req.body.company,
                     }
-
 
                 })
                 if (addCommande){
@@ -84,134 +97,36 @@ export default async function handler (req:NextApiRequest, res:NextApiResponse){
                         // @ts-ignore
                         const currentDate = new Date().toLocaleDateString('fr-FR', dateOptions);
                         const imagePath = path.join(process.cwd(), 'public', 'Digiarti.jpg');
-                        let myInvoice = new MicroInvoice({
-                            style : {
-                                header : {
-                                    image : {
-                                        path : imagePath,
-                                        width : 100,
-                                        height : 100
-                                    }
-                                }
+                        const details = await prisma.commande.findFirst({
+                            where: {
+                                id: addCommande.id
                             },
-                            data : {
-                                invoice : {
-                                    name : "DIGIBOOST",
-
-                                    header : [ {
-                                        label : "Date",
-                                        value :
-                                            [
-                                                "Big Corp",
-                                                "2 Flowers Streets, London",
-                                                "UK",
-                                                "+44245345435345",
-                                                "biling@bigcorp.com",
-                                                currentDate
-                                            ]
-                                    }],
-
-                                    currency : "EUR",
-
-                                    customer : [{
-                                        label : "Bill To",
-                                        value : [
-                                            customer.fullname,
-                                            customer.companyName,
-                                            customer.email,
-                                            customer.phone,
-                                            customer.adressPostal,
-                                        ]
-                                    },
-                                    //     {
-                                    //     label : "Tax Identifier",
-                                    //     value : "352352342333"
-                                    // }, {
-                                    //     label : "Information",
-                                    //     value : "Deliver to the door"
-                                    // }
-                                    ],
-
-                                    // seller : [{
-                                    //     label : "Bill From",
-                                    //     value : [
-                                    //         "Big Corp",
-                                    //         "2 Flowers Streets, London",
-                                    //         "UK",
-                                    //         "+44245345435345",
-                                    //         "biling@bigcorp.com"
-                                    //     ]
-                                    // }, {
-                                    //     label : "Tax Identifier",
-                                    //     value : "5345345345435345345"
-                                    // }],
-
-                                    legal : [{
-                                        value  : "Codition particulière",
-                                        weight : "bold",
-                                        color  : "primary"
-                                    }, {
-                                        value  : req.body.libelleCGU,
-                                        weight : "bold",
-                                        color  : "secondary"
-                                    }],
-
-                                    details : {
-                                        header : [{
-                                            value : "Solution commerciale à facturation mensuelle"
-                                        },
-                                        //     {
-                                        //     value : "Quantity"
-                                        // }, {
-                                        //     value : "Subtotal"
-                                        // }
-                                        ],
-
-                                        parts : [
-                                            [{
-                                                value : "Offre Booster"
-                                            },
-                                            //     {
-                                            //     value : 1
-                                            // }, {
-                                            //     value : "53",
-                                            //     price : true
-                                            // }
-                                            ],
-
-                                            [{
-                                                value : "Discount"
-                                            }, {
-                                                value : 1
-                                            }, {
-                                                value : "-10",
-                                                price : true
-                                            }]
-                                        ],
-
-                                        total : [{
-                                            label : "Total without VAT",
-                                            value : "43",
-                                            price : true
-                                        }, {
-                                            label : "VAT Rate",
-                                            value : "20%"
-                                        }, {
-                                            label : "VAT Paid",
-                                            value : "8.6",
-                                            price : true
-                                        }, {
-                                            label : "Total paid with VAT",
-                                            value : "51.6",
-                                            price : true
-                                        }]
-                                    }
-                                }
+                            select:{
+                                createdAt:true,
+                                code:true,
+                                taxe: true,
+                                servicePrice:true,
+                                payementMethod:true,
+                                cardNumber:true,
+                                beginDate: true,
+                                endDate: true,
+                                taxeService: true,
+                                TTC: true,
+                                condition:true,
+                                ownerName:true,
+                                horsTaxe:true,
+                                client: true,
+                                societe: true
                             }
                         });
-                        myInvoice.generate(`${code}.pdf`).then(()=>{
-                            console.log("Invoice saved")
-                        })
+                        if (details){
+                            const stream = await renderToStream(
+                                <MyDocument data={details} />
+                            );
+                            res.setHeader('content-Type', 'application/pdf');
+                            res.setHeader('content-Disposition', `attachement; filename=facture_${details.code}.pdf`);
+                            stream.pipe(res)
+                        }
                     }
                 }
             }

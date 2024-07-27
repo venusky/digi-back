@@ -86,6 +86,7 @@ model Commande {
   endDate        DateTime?
   horsTaxe       Float                    @default(0.0)
   time           Float?
+  taxeService    Float                    @default(0.0)
   TTC            Float?                   @default(0.0)
   condition      Cgu                      @relation(fields: [conditionId], references: [id])
   conditionId    Int
