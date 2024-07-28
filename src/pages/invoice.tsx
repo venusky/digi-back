@@ -12,7 +12,18 @@ const PDFViewer = dynamic(
     },
 );
 
-const Invoice = ({data:any}) =>{
+interface DocumentData {
+    societe: any,
+    condition: any,
+    beginDate: any,
+    endDate: any,
+    horsTaxe: any,
+    servicePrice: any,
+    taxe:any,
+    taxeService:any
+}
+
+const Invoice : React.FC<{ data: DocumentData }>  = ({data}) =>{
 
 
     return(
