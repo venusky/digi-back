@@ -31,6 +31,8 @@ const MyDocument : React.FC<{ data: DocumentData }> = ({data}) => (
                         justifyContent: 'flex-end',
                         alignItems: 'flex-start',
                         margin:10,
+                        marginLeft:200,
+                        gap:8
                     }}>
                         <Text style={{
                                 fontSize:16,
