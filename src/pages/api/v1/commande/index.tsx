@@ -35,7 +35,7 @@ export default async function handler (req:NextApiRequest, res:NextApiResponse){
                         prelevement: true
                     }
                     } },
-                orderBy: { createdAt: "asc" },
+                orderBy: { createdAt: "desc" },
             })
             if (commandes){
                 return res.status(200).json({
