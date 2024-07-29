@@ -4,16 +4,22 @@ import {PrismaClient} from "@prisma/client";
 import cryptoRandomString from "crypto-random-string";
 import path from "node:path";
 import {hooks} from "prismjs";
+import concat from 'concat-stream';
 import add = hooks.add;
 import {render} from "@react-email/components";
 import {renderToStream} from "@react-pdf/renderer";
 import MyDocument from "../../../../../pdf/document";
 
-const streamToArray = require('stream-to-array');
 const URL = process.env.URL_FRONT
 
 
 const prisma = new PrismaClient()
+
+async function streamToArray(stream: NodeJS.ReadableStream): Promise<Buffer[]> {
+    return new Promise((resolve, reject) => {
+        stream.pipe(concat(data => resolve(data))).on('error', reject);
+    });
+}
 
 
 import sgMail from '@/../lib/sendgrid'

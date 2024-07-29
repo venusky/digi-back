@@ -16,6 +16,7 @@
     "@types/twilio": "^3.19.3",
     "@vercel/postgres": "^0.9.0",
     "bcrypt": "^5.1.1",
+    "concat-stream": "^2.0.0",
     "crypto-random-string": "^5.0.0",
     "next": "14.2.4",
     "nextjs-cors": "^2.2.0",
@@ -23,10 +24,10 @@
     "react": "^18",
     "react-dom": "^18",
     "react-email": "2.1.5",
-    "stream-array": "^1.1.2",
     "twilio": "^5.2.2"
   },
   "devDependencies": {
+    "@types/concat-stream": "^2.0.3",
     "@types/node": "^20.14.9",
     "@types/react": "^18",
     "@types/react-dom": "^18",
