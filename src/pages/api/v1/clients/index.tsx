@@ -6,6 +6,12 @@ const URL = process.env.URL_FRONT
 
 const prisma = new PrismaClient()
 
+import twilio from 'twilio';
+require('dotenv').config({ path: '.env.local' });
+const twilioSid = process.env.TWILIO_ACCOUNT_SID
+const authToken = process.env.TWILIO_AUTH_TOKEN
+const params = twilio(twilioSid, authToken)
+
 export default async function handler (req:NextApiRequest, res:NextApiResponse){
     const { id } = req.query;
     // console.log(id)
@@ -57,6 +63,11 @@ export default async function handler (req:NextApiRequest, res:NextApiResponse){
                         tva: tva
                     }
                 });
+                const sms = await params.messages.create({
+                    body: `Digiarti, code ${code}. Merci \nde saisir ce code pour signer \n le bon de commande. le \ncas échéant le mandat de \nprélèvement (code non réutilisable, expire dans 15min)`,
+                    from: process.env.TWILIO_PHONE_NUMBER,
+                    to: String(addCustomer.phone)
+                })
                 return res.status(200).json({success: 'ok', clients:{addCustomer}})
             }
         }

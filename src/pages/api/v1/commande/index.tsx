@@ -7,14 +7,15 @@ import {hooks} from "prismjs";
 import add = hooks.add;
 import {render} from "@react-email/components";
 import {renderToStream} from "@react-pdf/renderer";
-import Invoice from "@/pages/invoice";
 import MyDocument from "../../../../../pdf/document";
-import {number} from "prop-types";
-import {start} from "node:repl";
 const URL = process.env.URL_FRONT
 
+
 const prisma = new PrismaClient()
-var MicroInvoice = require('../../../../../lib')
+
+import streamToArray from 'stream-to-array';
+
+import sgMail from '@/../lib/sendgrid'
 
 export default async function handler (req:NextApiRequest, res:NextApiResponse){
 
@@ -120,12 +121,29 @@ export default async function handler (req:NextApiRequest, res:NextApiResponse){
                             }
                         });
                         if (details){
-                            const stream = await renderToStream(
-                                <MyDocument data={details} />
-                            );
-                            res.setHeader('content-Type', 'application/pdf');
-                            res.setHeader('content-Disposition', `attachement; filename=facture_${details.code}.pdf`);
-                            stream.pipe(res)
+                            const stream = await renderToStream(<MyDocument data={details} />);
+                            // générer le pdf
+                            const pdfBuffer = Buffer.concat(await streamToArray(stream))
+                            const pdfBase64 = pdfBuffer.toString('base64') //convertir le buffer en base64
+
+                            await sgMail.send({
+                                to: String(customer.email),
+                                from: "Contact@digiarti.com",
+                                subject: "Facture service",
+                                text:`Votre facture suite au commande du ${new Date(details.createdAt).toLocaleDateString()}`,
+                                attachments: [
+                                    {
+                                        content: pdfBase64,
+                                        filename: `facture_${details.code}.pdf`,
+                                        type: 'application/pdf',
+                                        disposition: 'attachment',
+                                    },
+                                ],
+                            })
+                            res.status(200).json({
+                                success:true,
+                                message: 'Commande créé avec succès'
+                            })
                         }
                     }
                 }
