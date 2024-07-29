@@ -8,7 +8,8 @@ import add = hooks.add;
 import {render} from "@react-email/components";
 import {renderToStream} from "@react-pdf/renderer";
 import MyDocument from "../../../../../pdf/document";
-import streamToArray from 'stream-to-array'
+
+const streamToArray = require('stream-to-array');
 const URL = process.env.URL_FRONT
 
 
