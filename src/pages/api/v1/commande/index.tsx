@@ -15,9 +15,9 @@ const URL = process.env.URL_FRONT
 
 const prisma = new PrismaClient()
 
-async function streamToArray(stream: NodeJS.ReadableStream): Promise<Buffer[]> {
+async function streamToBuffer(stream: NodeJS.ReadableStream): Promise<Buffer> {
     return new Promise((resolve, reject) => {
-        stream.pipe(concat(data => resolve(data))).on('error', reject);
+        stream.pipe(concat((data: Buffer) => resolve(data))).on('error', reject);
     });
 }
 
@@ -130,7 +130,8 @@ export default async function handler (req:NextApiRequest, res:NextApiResponse){
                         if (details){
                             const stream = await renderToStream(<MyDocument data={details} />);
                             // générer le pdf
-                            const pdfBuffer = Buffer.concat(await streamToArray(stream))
+                            const pdfBuffer = await streamToBuffer(stream)
+                            // @ts-ignore
                             const pdfBase64 = pdfBuffer.toString('base64') //convertir le buffer en base64
 
                             await sgMail.send({
