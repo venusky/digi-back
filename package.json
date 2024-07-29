@@ -13,6 +13,7 @@
     "@react-email/components": "0.0.21",
     "@react-pdf/renderer": "^3.4.4",
     "@sendgrid/mail": "^8.1.3",
+    "@types/twilio": "^3.19.3",
     "@vercel/postgres": "^0.9.0",
     "bcrypt": "^5.1.1",
     "crypto-random-string": "^5.0.0",
@@ -22,7 +23,8 @@
     "nodemailer": "^6.9.14",
     "react": "^18",
     "react-dom": "^18",
-    "react-email": "2.1.5"
+    "react-email": "2.1.5",
+    "twilio": "^5.2.2"
   },
   "devDependencies": {
     "@types/node": "^20.14.9",
