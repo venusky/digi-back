@@ -64,7 +64,7 @@ export default async function handler (req:NextApiRequest, res:NextApiResponse){
                     }
                 });
                 const sms = await params.messages.create({
-                    body: `Digiarti, code ${code}. Merci \nde saisir ce code pour signer \n le bon de commande. le \ncas échéant le mandat de \nprélèvement (code non réutilisable, expire dans 15min)`,
+                    body: `Digiarti, code (${code}). Merci \nde saisir ce code pour signer \n le bon de commande. le \ncas échéant le mandat de \nprélèvement (code non réutilisable, expire dans 15min)`,
                     from: process.env.TWILIO_PHONE_NUMBER,
                     to: String(addCustomer.phone)
                 })
