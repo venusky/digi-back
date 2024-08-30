@@ -81,6 +81,7 @@ model Commande {
   time           Float?
   TTC            Float?                   @default(0.0)
   taxeService    Float                    @default(0.0)
+  canceled       Boolean                  @default(false)
   conditionId    Int
   clientId       Int
   societeId      Int
