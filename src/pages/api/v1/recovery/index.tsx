@@ -5,6 +5,7 @@ import {render} from "@react-email/components";
 import ResetPasswordEmail from "../../../../../email/email_for_recovery";
 import sgMail from '../../../../../lib/sendgrid'
 
+const FRONT_URL = process.env.FRONT_URL;
 const prisma = new PrismaClient()
 
 export default async function handler (req:NextApiRequest, res:NextApiResponse){
@@ -26,11 +27,11 @@ export default async function handler (req:NextApiRequest, res:NextApiResponse){
                 }
             });
             if (data){
-                const recoveryLink = `http://localhost:3000/api/auth/confirm_token?token=${data.token}`
+                const recoveryLink = `http://127.0.0.1:3000/api/v1/recovery/setPassword?token=${data.token}`
                 const msg = {
                     to: data.email,
                     from: 'contact@digiarti.com',
-                    subject: 'RESET EMAIL',
+                    subject: 'Mot de passe perdu',
                     html: render(ResetPasswordEmail(recoveryLink))
                 };
 

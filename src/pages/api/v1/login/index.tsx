@@ -29,10 +29,15 @@ export default async function handler(req:NextApiRequest, res:NextApiResponse){
                 return res.status(404).json({message: "Utilisateur introuvable"})
             } else {
                 const checkPassword = await bcrypt.compareSync(req.body.password, data.password);
+                const dataForUser = {
+                    email: data.email,
+                    name: data.name,
+                    firstname: data.firstname
+                } // objet d'élément de l'utilisateur à retourner vers le front
                 if (!checkPassword || data.email !== req.body.email){
                     return res.status(404).json({message: "email ou mot de passe incorrect"})
                 }
-                return res.status(200).json(data);
+                return res.status(200).json(dataForUser);
             }
         }
 

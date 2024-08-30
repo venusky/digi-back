@@ -9,11 +9,17 @@ import add = hooks.add;
 import {render} from "@react-email/components";
 import {renderToStream} from "@react-pdf/renderer";
 import MyDocument from "../../../../../pdf/document";
+require('dotenv').config({ path: '.env.local' });
 
 const URL = process.env.URL_FRONT
 
 
 const prisma = new PrismaClient()
+
+import twilio from 'twilio';
+const twilioSid = process.env.TWILIO_ACCOUNT_SID
+const authToken = process.env.TWILIO_AUTH_TOKEN
+const params = twilio(twilioSid, authToken)
 
 async function streamToBuffer(stream: NodeJS.ReadableStream): Promise<Buffer> {
     return new Promise((resolve, reject) => {
@@ -100,6 +106,9 @@ export default async function handler (req:NextApiRequest, res:NextApiResponse){
                         data: productMap,
                         skipDuplicates: true,
                     });
+                    // ++++
+                    // si la facture est crée avec succès
+                    // +++++//
                     if (setAarticle){
                         const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
                         // @ts-ignore
@@ -128,30 +137,39 @@ export default async function handler (req:NextApiRequest, res:NextApiResponse){
                             }
                         });
                         if (details){
-                            const stream = await renderToStream(<MyDocument data={details} />);
-                            // générer le pdf
-                            const pdfBuffer = await streamToBuffer(stream)
-                            // @ts-ignore
-                            const pdfBase64 = pdfBuffer.toString('base64') //convertir le buffer en base64
+                            const sms = await params.messages.create({
+                                body: `Digiarti, code (${code}). Merci \nde saisir ce code pour signer \n le bon de commande. le \ncas échéant le mandat de \nprélèvement (code non réutilisable, expire dans 15min)`,
+                                from: process.env.TWILIO_PHONE_NUMBER,
+                                to: String(customer.phone)
+                            })
+                            if (sms.status === 'queued' || sms.status === 'sent' || sms.status === 'delivered'){
+                                const stream = await renderToStream(<MyDocument data={details} />);
+                                // générer le pdf
+                                const pdfBuffer = await streamToBuffer(stream)
+                                // @ts-ignore
+                                const pdfBase64 = pdfBuffer.toString('base64') //convertir le buffer en base64
 
-                            await sgMail.send({
-                                to: String(customer.email),
-                                from: "Contact@digiarti.com",
-                                subject: "Facture service",
-                                text:`Votre facture suite au commande du ${new Date(details.createdAt).toLocaleDateString()}`,
-                                attachments: [
-                                    {
-                                        content: pdfBase64,
-                                        filename: `facture_${details.code}.pdf`,
-                                        type: 'application/pdf',
-                                        disposition: 'attachment',
-                                    },
-                                ],
-                            })
-                            res.status(200).json({
-                                success:true,
-                                message: 'Commande créé avec succès'
-                            })
+                                await sgMail.send({
+                                    to: String(customer.email),
+                                    from: "Contact@digiarti.com",
+                                    subject: "Facture service",
+                                    text:`Votre facture suite à la commande du ${new Date(details.createdAt).toLocaleDateString()}`,
+                                    attachments: [
+                                        {
+                                            content: pdfBase64,
+                                            filename: `facture_${details.code}.pdf`,
+                                            type: 'application/pdf',
+                                            disposition: 'attachment',
+                                        },
+                                    ],
+                                })
+                                res.status(200).json({
+                                    success:true,
+                                    message: 'Commande créé avec succès \n un code est envoyé au client pour validation'
+                                })
+                            } else {
+                                console.log('Le SMS a été envoyé, mais pas dans l\'état attendu:', sms.status);
+                            }
                         }
                     }
                 }
