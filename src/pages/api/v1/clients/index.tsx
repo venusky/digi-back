@@ -2,7 +2,7 @@ import {NextApiRequest, NextApiResponse} from "next";
 import Cors from "nextjs-cors";
 import {PrismaClient} from "@prisma/client";
 import cryptoRandomString from "crypto-random-string";
-const URL = process.env.URL_FRONT
+const URL = process.env.URL_FRONT || 'https://digiboost.vercel.app';
 
 const prisma = new PrismaClient()
 
