@@ -6,11 +6,11 @@ const URL = process.env.URL_FRONT || 'https://digiboost.vercel.app';
 
 const prisma = new PrismaClient()
 
-import twilio from 'twilio';
-require('dotenv').config({ path: '.env.local' });
-const twilioSid = process.env.TWILIO_ACCOUNT_SID
-const authToken = process.env.TWILIO_AUTH_TOKEN
-const params = twilio(twilioSid, authToken)
+// import twilio from 'twilio';
+// require('dotenv').config({ path: '.env.local' });
+// const twilioSid = process.env.TWILIO_ACCOUNT_SID
+// const authToken = process.env.TWILIO_AUTH_TOKEN
+// const params = twilio(twilioSid, authToken)
 
 export default async function handler (req:NextApiRequest, res:NextApiResponse){
     const { id } = req.query;
