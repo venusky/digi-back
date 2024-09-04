@@ -72,14 +72,16 @@ export default async function handler (req:NextApiRequest, res:NextApiResponse){
                 last.setDate(today.getDate() + 15);
 
                 const IDCustomer = customer.id
-                const TTC = parseFloat(req.body.subsolde) + parseFloat(req.body.serviceprice) + parseFloat(req.body.taxeprice);
+                const TTC = parseFloat(req.body.subsolde) + parseFloat(req.body.serviceprice) + parseFloat(req.body.taxeprice) + parseFloat(req.body.servicepriceTaxe) + parseFloat(req.body.servicepricePerMonth) + parseFloat(req.body.servicepricePerMonthTaxe);
                 const code = cryptoRandomString({length: 8, type: 'numeric'});
                 const addCommande = await prisma.commande.create({
-                    data:{
+                data:{
                         code: code,
                         taxe: parseFloat(req.body.taxeprice),
                         servicePrice: parseFloat(req.body.serviceprice),
-                        taxeService: parseFloat(req.body.taxeService),
+                        taxeService: parseFloat(req.body.servicepriceTaxe),
+                        monthServicePrice:parseFloat(req.body.servicepricePerMonth),
+                        taxeMonthService:parseFloat(req.body.servicepricePerMonthTaxe),
                         payementMethod: req.body.paidMethod.paidname,
                         ownerName: req.body.paidMethod.ownername,
                         beginDate: today,
@@ -97,7 +99,8 @@ export default async function handler (req:NextApiRequest, res:NextApiResponse){
                     const data = req.body.products;
                     const productMap = data.map((product: any) => ({
                         libelle: product.name,
-                        details: product.details,
+                        service: product.service,
+                        monthService:product.monthService,
                         unitPrice: parseFloat(product.price),
                         quantity: parseFloat(product.quantity),
                         commandeId: addCommande.id,
@@ -123,7 +126,9 @@ export default async function handler (req:NextApiRequest, res:NextApiResponse){
                                 code:true,
                                 taxe: true,
                                 servicePrice:true,
+                                monthServicePrice:true,
                                 payementMethod:true,
+                                taxeMonthService:true,
                                 cardNumber:true,
                                 beginDate: true,
                                 endDate: true,
@@ -137,12 +142,12 @@ export default async function handler (req:NextApiRequest, res:NextApiResponse){
                             }
                         });
                         if (details){
-                            const sms = await params.messages.create({
-                                body: `Digiarti, code (${code}). Merci \nde saisir ce code pour signer \n le bon de commande. le \ncas échéant le mandat de \nprélèvement (code non réutilisable, expire dans 15min)`,
-                                from: process.env.TWILIO_PHONE_NUMBER,
-                                to: String(customer.phone)
-                            })
-                            if (sms.status === 'queued' || sms.status === 'sent' || sms.status === 'delivered'){
+                            // const sms = await params.messages.create({
+                            //     body: `Digiarti, code (${code}). Merci \nde saisir ce code pour signer \n le bon de commande. le \ncas échéant le mandat de \nprélèvement (code non réutilisable, expire dans 15min)`,
+                            //     from: process.env.TWILIO_PHONE_NUMBER,
+                            //     to: String(customer.phone)
+                            // })
+                            // if (sms.status === 'queued' || sms.status === 'sent' || sms.status === 'delivered'){
                                 const stream = await renderToStream(<MyDocument data={details} />);
                                 // générer le pdf
                                 const pdfBuffer = await streamToBuffer(stream)
@@ -167,9 +172,9 @@ export default async function handler (req:NextApiRequest, res:NextApiResponse){
                                     success:true,
                                     message: 'Commande créé avec succès \n un code est envoyé au client pour validation'
                                 })
-                            } else {
-                                console.log('Le SMS a été envoyé, mais pas dans l\'état attendu:', sms.status);
-                            }
+                            // } else {
+                            //     console.log('Le SMS a été envoyé, mais pas dans l\'état attendu:', sms.status);
+                            // }
                         }
                     }
                 }

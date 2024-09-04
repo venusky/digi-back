@@ -11,6 +11,8 @@ interface DocumentData {
     endDate: any,
     horsTaxe: any,
     servicePrice: any,
+    monthServicePrice: any,
+    taxeMonthService: any,
     taxe:any,
     taxeService:any
 }
@@ -100,11 +102,28 @@ const MyDocument : React.FC<{ data: DocumentData }> = ({data}) => (
                                 height:'65%',
                                 justifyContent:'space-around',
                             }}>
-                                <Text style={{
-                                    fontSize:14,
-                                    fontWeight:'bold',
-                                    marginLeft:10
-                                }}>Offre booster</Text>
+                                <View style={{
+                                    flexDirection: "row",
+                                    justifyContent:'space-between',
+                                    alignItems:"center"
+                                }}>
+                                    <Text style={{
+                                        fontSize:14,
+                                        fontWeight:'bold',
+                                        marginLeft:10
+                                    }}>Offre booster</Text>
+                                    <View style={{
+                                        flexDirection: 'column',
+                                        alignContent: 'center',
+                                        justifyContent: 'space-around',
+                                        gap:4
+                                    }}>
+                                        <Text style={{
+                                            fontSize:12
+                                        }}>{(data.horsTaxe).toFixed(2)} € / mois</Text>
+                                    </View>
+                                </View>
+
                                 <View style={{
                                     flexDirection: 'row',
                                     justifyContent:'space-around',
@@ -118,7 +137,7 @@ const MyDocument : React.FC<{ data: DocumentData }> = ({data}) => (
                                     }}>
                                         <Text style={{
                                             fontSize:12
-                                        }}>Montant Mensuel</Text>
+                                        }}>Frais Mensuel</Text>
                                         <Text style={{
                                             fontSize:12
                                         }}>Frais de service</Text>
@@ -131,7 +150,7 @@ const MyDocument : React.FC<{ data: DocumentData }> = ({data}) => (
                                     }}>
                                         <Text style={{
                                             fontSize:12
-                                        }}>{(data.horsTaxe).toFixed(2)} € / mois</Text>
+                                        }}>{(data.monthServicePrice).toFixed(2)} € / mois</Text>
                                         <Text style={{
                                             fontSize:12
                                         }}>{(data.servicePrice).toFixed(2)} €</Text>
@@ -161,7 +180,7 @@ const MyDocument : React.FC<{ data: DocumentData }> = ({data}) => (
                                     }}>
                                         <Text style={{
                                             fontSize:12
-                                        }}>{(data.servicePrice).toFixed(2)} € / mois</Text>
+                                        }}>{(data.horsTaxe + data.monthServicePrice).toFixed(2)} € / mois</Text>
                                         <Text style={{
                                             fontSize:12
                                         }}>{(data.servicePrice).toFixed(2)} €</Text>
@@ -204,16 +223,16 @@ const MyDocument : React.FC<{ data: DocumentData }> = ({data}) => (
                                         fontSize:12,
                                         fontWeight:'bold',
                                         color:'#FFF'
-                                    }}>{(data.horsTaxe).toFixed(2)} € / mois; F.Serv. : {(data.servicePrice).toFixed(2)} €</Text>
+                                    }}>{(data.horsTaxe + data.monthServicePrice).toFixed(2)} € / mois; F.Serv. : {(data.servicePrice).toFixed(2)} €</Text>
                                     <Text style={{
                                         fontSize:12,
                                         color:'#FFF'
-                                    }}>{(data.taxe).toFixed(2)} € / mois; F.Serv. : {(data.taxeService).toFixed(2)} €</Text>
+                                    }}>{(data.taxe + data.taxeMonthService).toFixed(2)} € / mois; F.Serv. : {(data.taxeService).toFixed(2)} €</Text>
                                     <Text style={{
                                         fontSize:12,
                                         fontWeight:'bold',
                                         color:'#FFF'
-                                    }}>{(data.horsTaxe + data.taxe).toFixed(2)} € / mois; F.Serv. : {(data.servicePrice + data.taxeService).toFixed(2)} €</Text>
+                                    }}>{(data.horsTaxe + data.monthServicePrice + data.taxe + data.taxeMonthService).toFixed(2)} € / mois; F.Serv. : {(data.servicePrice + data.taxeService).toFixed(2)} €</Text>
                                 </View>
                             </View>
                         </View>

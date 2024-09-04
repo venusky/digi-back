@@ -67,42 +67,45 @@ model Client {
 }
 
 model Commande {
-  id             Int                      @id @default(autoincrement())
-  createdAt      DateTime                 @default(now())
-  updatedAt      DateTime                 @updatedAt
-  code           String
-  taxe           Float                    @default(0.0)
-  servicePrice   Float                    @default(0.0)
-  payementMethod String?
-  ownerName      String
-  beginDate      DateTime?
-  endDate        DateTime?
-  horsTaxe       Float                    @default(0.0)
-  time           Float?
-  TTC            Float?                   @default(0.0)
-  taxeService    Float                    @default(0.0)
-  canceled       Boolean                  @default(false)
-  conditionId    Int
-  clientId       Int
-  societeId      Int
-  cardNumber     String
-  Articles       Articles[]
-  client         Client                   @relation(fields: [clientId], references: [id])
-  condition      Cgu                      @relation(fields: [conditionId], references: [id])
-  societe        Societe                  @relation(fields: [societeId], references: [id])
-  prelevements   PrelevementOnCommandes[]
+  id                Int                      @id @default(autoincrement())
+  createdAt         DateTime                 @default(now())
+  updatedAt         DateTime                 @updatedAt
+  code              String
+  taxe              Float                    @default(0.0)
+  servicePrice      Float                    @default(0.0)
+  monthServicePrice Float                    @default(0.0)
+  payementMethod    String?
+  ownerName         String
+  beginDate         DateTime?
+  endDate           DateTime?
+  horsTaxe          Float                    @default(0.0)
+  time              Float?
+  TTC               Float?                   @default(0.0)
+  taxeMonthService  Float                    @default(0.0)
+  taxeService       Float                    @default(0.0)
+  canceled          Boolean                  @default(false)
+  conditionId       Int
+  clientId          Int
+  societeId         Int
+  cardNumber        String
+  Articles          Articles[]
+  client            Client                   @relation(fields: [clientId], references: [id])
+  condition         Cgu                      @relation(fields: [conditionId], references: [id])
+  societe           Societe                  @relation(fields: [societeId], references: [id])
+  prelevements      PrelevementOnCommandes[]
 }
 
 model Articles {
-  id         Int      @id @default(autoincrement())
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  libelle    String
-  details    String?
-  unitPrice  Float    @default(0.0)
-  quantity   Float    @default(0.0)
-  commandeId Int
-  commande   Commande @relation(fields: [commandeId], references: [id])
+  id           Int      @id @default(autoincrement())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  libelle      String
+  service      String?
+  monthService String?
+  unitPrice    Float    @default(0.0)
+  quantity     Float    @default(0.0)
+  commandeId   Int
+  commande     Commande @relation(fields: [commandeId], references: [id])
 }
 
 model Prelevement {
