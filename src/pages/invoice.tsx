@@ -19,6 +19,8 @@ interface DocumentData {
     endDate: any,
     horsTaxe: any,
     servicePrice: any,
+    monthServicePrice: any,
+    taxeMonthService: any,
     taxe:any,
     taxeService:any
 }
