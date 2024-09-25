@@ -67,12 +67,13 @@ export default async function handler (req:NextApiRequest, res:NextApiResponse){
                 }
             })
             if (customer){
+                console.log(req.body)
                 const today = new Date();
                 const last = new Date(today);
                 last.setDate(today.getDate() + 15);
 
                 const IDCustomer = customer.id
-                const TTC = parseFloat(req.body.subsolde) + parseFloat(req.body.serviceprice) + parseFloat(req.body.taxeprice) + parseFloat(req.body.servicepriceTaxe) + parseFloat(req.body.servicepricePerMonth) + parseFloat(req.body.servicepricePerMonthTaxe);
+                const TTC = parseFloat(req.body.subsolde) + parseFloat(req.body.taxeprice);
                 const code = cryptoRandomString({length: 8, type: 'numeric'});
                 const addCommande = await prisma.commande.create({
                 data:{
@@ -101,8 +102,8 @@ export default async function handler (req:NextApiRequest, res:NextApiResponse){
                         libelle: product.name,
                         service: product.service,
                         monthService:product.monthService,
-                        unitPrice: parseFloat(product.price),
-                        quantity: parseFloat(product.quantity),
+                        unitPrice: 0,
+                        quantity: 0,
                         commandeId: addCommande.id,
                     }))
                     const setAarticle = await prisma.articles.createMany({
