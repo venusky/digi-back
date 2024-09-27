@@ -143,12 +143,12 @@ export default async function handler (req:NextApiRequest, res:NextApiResponse){
                             }
                         });
                         if (details){
-                            // const sms = await params.messages.create({
-                            //     body: `Digiarti, code (${code}). Merci \nde saisir ce code pour signer \n le bon de commande. le \ncas échéant le mandat de \nprélèvement (code non réutilisable, expire dans 15min)`,
-                            //     from: process.env.TWILIO_PHONE_NUMBER,
-                            //     to: String(customer.phone)
-                            // })
-                            // if (sms.status === 'queued' || sms.status === 'sent' || sms.status === 'delivered'){
+                             const sms = await params.messages.create({
+                                 body: `Digiarti, code (${code}). Merci \nde saisir ce code pour signer \n le bon de commande. le \ncas échéant le mandat de \nprélèvement (code non réutilisable, expire dans 15min)`,
+                                 from: process.env.TWILIO_PHONE_NUMBER,
+                                 to: String(customer.phone)
+                             })
+                             if (sms.status === 'queued' || sms.status === 'sent' || sms.status === 'delivered'){
                                 const stream = await renderToStream(<MyDocument data={details} />);
                                 // générer le pdf
                                 const pdfBuffer = await streamToBuffer(stream)
@@ -173,9 +173,9 @@ export default async function handler (req:NextApiRequest, res:NextApiResponse){
                                     success:true,
                                     message: 'Commande créé avec succès \n un code est envoyé au client pour validation'
                                 })
-                            // } else {
-                            //     console.log('Le SMS a été envoyé, mais pas dans l\'état attendu:', sms.status);
-                            // }
+                             } else {
+                                 console.log('Le SMS a été envoyé, mais pas dans l\'état attendu:', sms.status);
+                             }
                         }
                     }
                 }
